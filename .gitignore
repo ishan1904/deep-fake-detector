@@ -1,0 +1,33 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore virtual environments
+.venv/
+env/
+venv/
+
+# Ignore environment variables
+.env
+
+# Ignore dataset and large files
+data/
+uploads/
+*.zip
+*.h5
+*.ckpt
+*.pb
+*.mp4
+*.avi
+*.mov
+
+# Ignore Jupyter notebook checkpoints (if any)
+.ipynb_checkpoints/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional, but common)
+.vscode/
