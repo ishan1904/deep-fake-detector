@@ -13,6 +13,7 @@ venv/
 
 # Ignore dataset and large files
 data/
+data_sample/
 uploads/
 *.zip
 *.h5
