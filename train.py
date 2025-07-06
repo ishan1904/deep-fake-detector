@@ -1,8 +1,9 @@
 import os
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import sequential
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+import matplotlib
 
 
 #constants
@@ -45,7 +46,7 @@ print("Test batches:", len(test_generator))
 
 #Build CNN
 
-model = sequential([
+model = Sequential([
      # layer 1:
     Conv2D(32, (3,3), activation="relu", input_shape=(IMG_SIZE, IMG_SIZE, 3)),
 
@@ -80,3 +81,32 @@ model.compile(
 
 # Summary of the model architecture
 model.summary()
+
+Epoochs = 10
+
+history = model.fit(
+    train_generator,
+    steps_per_epoch=len(train_generator),
+    epochs=Epoochs,
+    validation_data=val_generator,
+    validation_steps=len(val_generator)
+)
+
+model.save("deppfake-detector.h5")
+print("Model saved as deepfake_model.h5")
+
+plt.plot(history.history['accuracy'], label='train acc')
+plt.plot(history.history['val_accuracy'], label='val acc')
+plt.title('Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+plt.plot(history.history['loss'], label='train loss')
+plt.plot(history.history['val_loss'], label='val loss')
+plt.title('Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
