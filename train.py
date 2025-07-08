@@ -2,12 +2,16 @@ import os
 import numpy as np
 import tensorflow
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input, BatchNormalization
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input, BatchNormalization, GlobalAveragePooling2D
 import matplotlib.pyplot as plt
 from datetime import datetime
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.applications import MobileNetV2
+
+
+
 
 
 
@@ -62,49 +66,75 @@ print("Test batches:", len(test_generator))
 
 #Build CNN
 
-model = Sequential([
-       # Input layer
-    Input(shape=(IMG_SIZE, IMG_SIZE, 3)),
+# model = Sequential([
+#        # Input layer
+#     Input(shape=(IMG_SIZE, IMG_SIZE, 3)),
 
-    # Conv Block 1
-    Conv2D(32, (3, 3), activation="relu"),
-    BatchNormalization(),                      # Stabilize learning
-    MaxPooling2D(2, 2),
+#     # Conv Block 1
+#     Conv2D(32, (3, 3), activation="relu"),
+#     BatchNormalization(),                      # Stabilize learning
+#     MaxPooling2D(2, 2),
 
-    # Conv Block 2
-    Conv2D(64, (3, 3), activation="relu"),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
+#     # Conv Block 2
+#     Conv2D(64, (3, 3), activation="relu"),
+#     BatchNormalization(),
+#     MaxPooling2D(2, 2),
 
-    # Conv Block 3 - NEW: more abstraction
-    Conv2D(128, (3, 3), activation="relu"),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
+#     # Conv Block 3 - NEW: more abstraction
+#     Conv2D(128, (3, 3), activation="relu"),
+#     BatchNormalization(),
+#     MaxPooling2D(2, 2),
 
-    # Flatten to feed into dense layers
-    Flatten(),
+#     # Flatten to feed into dense layers
+#     Flatten(),
 
-    # Dense Block
-    Dense(128, activation='relu'),
-    Dropout(0.5),                              # Still good to keep this
+#     # Dense Block
+#     Dense(128, activation='relu'),
+#     Dropout(0.5),                              # Still good to keep this
 
-    # Dense(64, activation='relu'),              # NEW: additional dense layer
-    # Dropout(0.3),                              # Slightly lower dropout
+#     # Dense(64, activation='relu'),              # NEW: additional dense layer
+#     # Dropout(0.3),                              # Slightly lower dropout
 
-    # Output layer
-    Dense(1, activation='sigmoid')             # Binary classification
-])
+#     # Output layer
+#     Dense(1, activation='sigmoid')             # Binary classification
+# ])
+
+# # Compile the model
+# model.compile(
+#     optimizer=Adam(learning_rate=1e-4), 
+#     loss='binary_crossentropy',
+#     metrics=['accuracy']
+# )
+
+
+# # Summary of the model architecture
+# model.summary()
+
+# Load the MobileNetV2 base (excluding top dense layers)
+base_model = MobileNetV2(
+    input_shape=(IMG_SIZE, IMG_SIZE, 3),
+    include_top=False,
+    weights='imagenet'
+)
+base_model.trainable = False  # Freeze the base model for now
+
+# Add custom classification layers on top
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.5)(x)
+output = Dense(1, activation='sigmoid')(x)
+
+model = Model(inputs=base_model.input, outputs=output)
 
 # Compile the model
-model.compile(
-    optimizer=Adam(learning_rate=1e-4), 
-    loss='binary_crossentropy',
-    metrics=['accuracy']
-)
+model.compile(optimizer=Adam(learning_rate=0.0001),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
 
-
-# Summary of the model architecture
 model.summary()
+
+
 EPOCHS = 15
 early_stop = EarlyStopping(monitor='val_accuracy', patience=7, restore_best_weights=True)
 
