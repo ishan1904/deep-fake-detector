@@ -33,7 +33,13 @@ def index():
 
             # Make prediction
             result = model.predict(img)[0][0]
-            prediction = "Fake" if result < 0.5 else "Real"
+            
+            # Interpret the prediction
+            # Interpret the prediction
+            label = "Fake" if result < 0.5 else "Real"
+            confidence = 1 - result if label == "Fake" else result
+            confidence_percent = round(confidence * 100, 2)
+            prediction = f"{label} face with {confidence_percent}% confidence."
 
     return render_template('index.html', prediction=prediction)
 
