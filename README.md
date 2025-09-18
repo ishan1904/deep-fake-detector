@@ -3,8 +3,6 @@
 
 A deep learning–powered web application to detect **real** vs **fake (AI-generated)** faces using a **MobileNetV2** model. Built with **TensorFlow**, served via **Flask**, and deployed from Google Colab to GitHub.
 
-![App Screenshot](./static/demo_screenshot.png) <!-- Optional: Replace or remove -->
-
 ---
 
 ## 📁 Dataset
@@ -61,4 +59,38 @@ pip install -r requirements.txt
 python app.py
 ```
 Open browser at: http://127.0.0.1:5000/ 
+
+###🧠 Sample Output
+
+Input: Uploaded face image
+Output: Fake face with 87.45% confidence.
+
+### 📌 Project Structure
+```csharp
+deep-fake-detector/
+├── app.py                  # Flask application
+├── model/
+│   └── deepfake_detector.keras
+├── uploads/                # Uploaded files
+├── templates/
+│   └── index.html
+├── static/                 # CSS / images
+├── requirements.txt
+└── README.md
+```
+
+### 🤖 Future Plans
+
+Add streamlit-based UI
+
+Host model on Hugging Face Hub
+
+Deploy Flask app using Render or Railway
+
+Add webcam-based detection
+
+Improve model generalization with face crops + augmentations
+
+### Authors
+Ishan Rajvi
 
